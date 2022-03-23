@@ -2,7 +2,7 @@ import socket
 import termcolor
 
 # Configure the Server's IP and PORT
-PORT = 6500
+PORT = 7500
 IP = "0.0.0.0"
 MAX_OPEN_REQUESTS = 5
 

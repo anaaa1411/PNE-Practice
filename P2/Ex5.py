@@ -8,7 +8,7 @@ print(f"-----| Practice {PRACTICE}, Exercise {EXERCISE} |------")
 
 # -- Parameters of the server to talk to
 IP = "127.0.0.1"
-PORT = 6500
+PORT = 7500
 
 FILENAME = "FRAT1"
 filename = "./sequences/"
@@ -30,5 +30,3 @@ while i < len(s.strbases) and count < 5:
     i += 10
     print("Fragment", count, ":", fragment)
     response = c.talk(f"Fragment {count}: {fragment}")
-
-

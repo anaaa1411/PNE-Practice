@@ -7,7 +7,7 @@ print(f"-----| Practice {PRACTICE}, Exercise {EXERCISE} |------")
 
 # -- Parameters of the server to talk to
 IP = "127.0.0.1"
-PORT = 6500
+PORT = 7500
 
 
 #...

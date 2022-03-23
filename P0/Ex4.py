@@ -1,5 +1,6 @@
 import Seq0
 FILENAME = ["U5", "FRAT1", "ADA", "FXN", "RNU6_269P"]
+FOLDER = "./sequences/"
 base = ["A", "C", "T", "G"]
 countsA, countsC, countsT, countsG = Seq0.seq_count_base(FILENAME, base)
 print("-----| Exercise 4 |------")

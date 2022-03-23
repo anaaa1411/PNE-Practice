@@ -8,8 +8,8 @@ print(f"-----| Practice {PRACTICE}, Exercise {EXERCISE} |------")
 
 # -- Parameters of the server to talk to
 IP = "127.0.0.1"
-PORT = 6500
-PORT2 = 6501
+PORT = 7500
+PORT2 = 7501
 
 FILENAME = "FRAT1"
 filename = "./sequences/"

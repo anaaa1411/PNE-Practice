@@ -14,9 +14,8 @@ def valid_filename():  #Ex2
         except FileNotFoundError:
             print("File does not exist. Provide another file")
 
-def seq_read_fasta(FILENAME): #Ex2
+def seq_read_fasta(FOLDER, FILENAME): #Ex2
     from pathlib import Path
-    FOLDER = "./sequences/"
     seq = Path(FOLDER + FILENAME + ".txt").read_text()
     seq = seq[seq.find("\n"):].replace("\n", "")
     return seq
@@ -25,12 +24,13 @@ def seq_len(FILENAME): #Ex3
     return len(FILENAME)
 
 def seq_count_base(FILENAME, base): #Ex4
+    FOLDER = "./sequences/"
     countsA = []
     countsC = []
     countsT = []
     countsG = []
     for l in FILENAME:
-        file = seq_read_fasta(l)
+        file = seq_read_fasta(FOLDER, l)
         countA = file.count(base[0])
         countC = file.count(base[1])
         countT = file.count(base[2])
@@ -59,7 +59,8 @@ def seq_reverse(): #Ex6
 
 def seq_complement(FILENAME): #Ex7
     FILENAME = "U5"
-    sequence = seq_read_fasta(FILENAME)
+    FOLDER = "./sequences/"
+    sequence = seq_read_fasta(FOLDER, FILENAME)
     seq = sequence[0:20]
     d_complements = {"A": "T", "C": "G", "T": "A", "G": "C"}
     return "".join([d_complements[i] for i in seq])
