@@ -2,15 +2,16 @@ import socket
 from Seq1 import Seq
 
 def count_bases(seq):   #NO pongas esto talcual, utiliza lo de otras practicas
-    d = {"A": 0, "C": 0, "G": 0, "T": 0}
-    for b in seq:
-        d[b] += 1
+    base_dict = Seq.count_base(arg)
+    #d = {"A": 0, "C": 0, "G": 0, "T": 0}
+    for b in base_dict:
+        base_dict[b] += 1
 
-    total = sum(d.values())
+    total = sum(base_dict.values())
    # p = {"A": 0, "C": 0, "G": 0, "T": 0}
-    for k, v in d.items():
-        d[k] = [v, (v * 100) / total]
-    return d
+    for k, v in base_dict.items():
+        base_dict[k] = [v, (v * 100) / total]
+    return base_dict
 
 def convert_message(base_count):
     message = ""  #Como queremos recivir un string, ponemos un str vacio

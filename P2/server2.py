@@ -1,7 +1,8 @@
 import socket
+import termcolor
 
 # Configure the Server's IP and PORT
-PORT = 20501
+PORT = 6501
 IP = "0.0.0.0"
 MAX_OPEN_REQUESTS = 5
 
@@ -29,7 +30,7 @@ try:
 
         # Read the message from the client, if any
         msg = clientsocket.recv(2048).decode("utf-8")
-        print("Message from client: {}".format(msg))
+        termcolor.cprint("Message from client: {}".format(msg), "green")
 
         # Send the messag
         message = "Hello from the teacher's server"

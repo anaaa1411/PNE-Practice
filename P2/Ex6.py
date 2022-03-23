@@ -8,8 +8,8 @@ print(f"-----| Practice {PRACTICE}, Exercise {EXERCISE} |------")
 
 # -- Parameters of the server to talk to
 IP = "127.0.0.1"
-PORT = 20500
-PORT2 = 20501
+PORT = 6500
+PORT2 = 6501
 
 FILENAME = "FRAT1"
 filename = "./sequences/"
@@ -23,7 +23,7 @@ c2 = Client(IP, PORT2)
 
 
 print(f"Gene FRAT1: {str(s)}")
-response = c.talk(f"Sending {FILENAME} Gene to the server, in fragments of 10 bases..."), c2.talk(f"Sending {FILENAME} Gene to the server, in fragments of 10 bases...")
+response = (c.talk(f"Sending {FILENAME} Gene to the server, in fragments of 10 bases..."), c2.talk(f"Sending {FILENAME} Gene to the server, in fragments of 10 bases..."))
 
 i = 0
 count = 0
