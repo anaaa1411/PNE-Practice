@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>geneList</title>
+</head>
+<body style="background: greenyellow;">
+<h2>Gene List</h2>
+The genes are:
+<ul>
+{% for g in context.chromo %}
+<li><p>{{g}}</p></li>
+{% endfor %}
+</ul>
+<a href="/">Main page</a>
+
+</body>
+</html>

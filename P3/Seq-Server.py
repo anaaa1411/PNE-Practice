@@ -107,9 +107,11 @@ while True:
                 print(response + "\n")
             else:
                 response = "Wrong gene. Try: U5, ADA, FRAT1, FXN or RNU6_269P."
+        elif cmd == "MULT":  #EXAM
+            sequence = Seq(arg)
+            response = str(sequence.mult_bases())
+            print(response + "\n")
 
-        else:
-            response = "This comand is not available in the server.\n"
         # -- The message has to be encoded into bytes
         cs.send(response.encode())
 
