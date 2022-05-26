@@ -10,8 +10,8 @@ def ask_server(ENDPOINT, PARAMS=""):
     try:
         conn = http.client.HTTPConnection(SERVER)
         conn.request("GET", ENDPOINT + PARAMS)
-        r1 = conn.getresponse()
-        data1 = r1.read().decode("utf-8")
+        response = conn.getresponse()
+        data1 = response.read().decode("utf-8")
         data1 = json.loads(data1)
         return data1
     except ConnectionRefusedError:
@@ -20,7 +20,7 @@ def ask_server(ENDPOINT, PARAMS=""):
 termcolor.cprint("BASIC Level Services:", "blue")
 
 termcolor.cprint("1)List of species:", "green")
-species_list = ask_server("/listSpecies?","limit=15&json=on")
+species_list = ask_server("/listSpecies?","limit=20&json=on")
 print(species_list)
 
 termcolor.cprint("2)Karyotype information:", "green")
@@ -28,7 +28,7 @@ species_list = ask_server("/karyotype?", "species=human&json=on")
 print(species_list)
 
 termcolor.cprint("3)Chromosome length:", "green")
-species_list = ask_server("/chromosomeLength?","species2=mouse&chromosome=18&json=on")
+species_list = ask_server("/chromosomeLength?","chosen_species=mouse&chromosome=18&json=on")
 print(species_list)
 
 termcolor.cprint("MEDIUM Level Services:", "blue")

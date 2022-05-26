@@ -1,11 +1,11 @@
 import http.server
 import socketserver
 import termcolor
-from pathlib import Path
-import jinja2 as j
-from urllib.parse import parse_qs, urlparse
 import json
 import http.client
+import jinja2 as j
+from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 from Seq1 import Seq
 
 GENES = {"FRAT1": "ENSG00000165879",
@@ -20,10 +20,13 @@ GENES = {"FRAT1": "ENSG00000165879",
          "ANK2": "ENSG00000145362"}
 
 SERVER = 'rest.ensembl.org'
-#PARAMS = '?content-type=application/json'
 HTML_FOLDER = "./html/"
 PORT = 8080
 
+def read_html_file(filename):
+    contents = Path(HTML_FOLDER + filename).read_text()
+    contents = j.Template(contents)
+    return contents
 
 def ensembl_request(endpoint, PARAMS=""):
     # Connect with the server
@@ -34,21 +37,11 @@ def ensembl_request(endpoint, PARAMS=""):
     except ConnectionRefusedError:
         print("ERROR! Cannot connect to the Server")
         exit()
-
-        # -- Read the response message from the server
     response = conn.getresponse()
-    # -- Print the status line
     print(f"Response received!: {response.status} {response.reason}\n")
-    # -- Read the response's body
     data1 = response.read().decode("utf-8")
     data1 = json.loads(data1)
     return data1
-
-def read_html_file(filename):
-    contents = Path(HTML_FOLDER + filename).read_text()
-    contents = j.Template(contents)
-    return contents
-
 
 def count_bases(seq):
     d = {"A": 0, "C": 0, "G": 0, "T": 0}
@@ -58,34 +51,24 @@ def count_bases(seq):
     for k, v in d.items():
         d[k] = [v, (v * 100) / total]
     return d
-
 def convert_message(base_count):
     message = ""
     for k,v in base_count.items():
         message += k + ": " + str(v[0]) + " (" + str(round(v[1],1)) + "%)" + "<br>"
     return message
-
 def info_operation(arg):
     base_count = count_bases(arg)
     response = convert_message(base_count)
     return response
 
 
-
-
-
 socketserver.TCPServer.allow_reuse_address = True
 
-
-# Class with our Handler. It is a called derived from BaseHTTPRequestHandler
-# It means that our class inheritates all his methods and properties
 class TestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_GET(self):
         """This method is called whenever the client invokes the GET method
         in the HTTP protocol request"""
-
-        # Print the request line
         termcolor.cprint(self.requestline, 'green')
 
         url_path = urlparse(self.path)
@@ -112,15 +95,12 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     contents = {"limit": limit,"length": len(species_list),"species_list": species_list_def}
                 else:
                     contents = read_html_file(path[1:] + ".html").\
-                        render(context={"limit": limit,
-                                        "length": str(len(species_list)),
-                                        "species": species_list_def})
+                        render(context={"limit": limit,"length": str(len(species_list)),"species": species_list_def})
             except (IndexError,ValueError):
                 if "json" in arguments:
-                    contents = {"error": "Wrong value.Try entering a value inside the limits 0-311."}
+                    contents = {"error": "Wrong value.Try entering a value inside the limits 0-311, or leaving the text box empty for getting a list of all the species."}
                 else:
-                    contents = read_html_file("error.html") \
-                        .render()
+                    contents = read_html_file("error.html").render()
             except KeyError:
                 dict_ans = ensembl_request("/info/species", "")
                 species_list = dict_ans["species"]
@@ -128,7 +108,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 for i in range(0, int(len(species_list))):
                     species_list_empty.append(species_list[i]["display_name"])
                 if "json" in arguments:
-                    contents={"empty": species_list_empty}
+                    contents={"all_species": species_list_empty}
                 else:
                     contents = read_html_file(path[1:] + ".html"). \
                         render(context={"empty": species_list_empty})
@@ -147,14 +127,13 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 if "json" in arguments:
                     contents = {"error": "Wrong values entered or no information of them on ensmbl."}
                 else:
-                    contents = read_html_file("error.html") \
-                        .render()
+                    contents = read_html_file("error.html").render()
 
         elif path == "/chromosomeLength": #Ex3
             try:
-                species2 = arguments["species2"][0]
+                chosen_species = arguments["chosen_species"][0]
                 our_chromosome = arguments["chromosome"][0]
-                dict_ans = ensembl_request("/info/assembly/" + species2, "")
+                dict_ans = ensembl_request("/info/assembly/" + chosen_species, "")
                 all_dict = dict_ans["top_level_region"]
                 exit = False
                 i = 0
@@ -173,19 +152,17 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     if "json" in arguments:
                         contents = {"error": "Wrong values entered or no information of them on ensmbl."}
                     else:
-                        contents = read_html_file("error.html") \
-                            .render()
+                        contents = read_html_file("error.html").render()
             except (KeyError,IndexError):
                 if "json" in arguments:
                     contents = {"error": "Wrong values entered or no information of them on ensmbl."}
                 else:
-                    contents = read_html_file("error.html") \
-                        .render()
+                    contents = read_html_file("error.html").render()
 
 
     #MEDIUM LEVEL:
 
-        elif path == "/geneSeq": #Ex1
+        elif path == "/geneSeq": #Ex4
             try:
                 gen = str(arguments["seq"][0])
                 key = GENES[gen]
@@ -200,10 +177,9 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 if "json" in arguments:
                     contents = {"error": "Wrong values entered or no information of them on ensmbl."}
                 else:
-                    contents = read_html_file("error.html") \
-                        .render()
+                    contents = read_html_file("error.html").render()
 
-        elif path == "/geneInfo": #Ex2
+        elif path == "/geneInfo": #Ex5
             try:
                 gen = str(arguments["info"][0])
                 key = GENES[gen]
@@ -219,10 +195,9 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 if "json" in arguments:
                     contents = {"error": "Wrong values entered or no information of them on ensmbl."}
                 else:
-                    contents = read_html_file("error.html") \
-                        .render()
+                    contents = read_html_file("error.html").render()
 
-        elif path == "/geneCalc": #Ex3
+        elif path == "/geneCalc": #Ex6
             try:
                 gen = str(arguments["calc"][0])
                 key = GENES[gen]
@@ -238,10 +213,9 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 if "json" in arguments:
                     contents = {"error": "Wrong values entered or no information of them on ensmbl."}
                 else:
-                    contents = read_html_file("error.html") \
-                        .render()
+                    contents = read_html_file("error.html").render()
 
-        elif path == "/geneList": #Ex4
+        elif path == "/geneList": #Ex7
             try:
                 chromo = arguments["chromo"][0]
                 start = arguments["start"][0]
@@ -249,7 +223,6 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 point = chromo + ":" + start + "-" + end
                 dict_ans = ensembl_request("/phenotype/region/homo_sapiens/" + point, ";feature_type=Variation")
                 gene_list = []
-
                 for d in dict_ans:
                     dict_gene = d
                     if "phenotype_associations" in dict_gene:
@@ -261,8 +234,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     if "json" in arguments:
                         contents = {"error": "Wrong values entered or no information of them on ensmbl."}
                     else:
-                        contents = read_html_file("error.html") \
-                            .render()
+                        contents = read_html_file("error.html").render()
                 else:
                     if "json" in arguments:
                         contents = {"genelist": gene_list}
@@ -273,19 +245,15 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 if "json" in arguments:
                     contents = {"error": "Wrong values entered or no information of them on ensmbl."}
                 else:
-                    contents = read_html_file("error.html") \
-                        .render()
-
+                    contents = read_html_file("error.html").render()
 
         else:
             if "json" in arguments:
                 contents = {"error": "Wrong values entered or no information of them on ensmbl."}
             else:
-                contents = read_html_file("error.html") \
-                    .render()
+                contents = read_html_file("error.html").render()
 
 
-        # Generating the response message
         self.send_response(200)  # -- Status line: OK!
 
         if "json" in arguments.keys():
@@ -293,18 +261,14 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             self.send_header('Content-Type', 'application/json')
 
         else:
-        # Define the content-type header:
             self.send_header('Content-Type', 'text/html')
         self.send_header('Content-Length', len(contents.encode()))
 
-        # The header is finished
         self.end_headers()
 
-        # Send the response message
         self.wfile.write(contents.encode())
 
         return
-
 
 # ------------------------
 # - Server MAIN program
@@ -322,5 +286,5 @@ with socketserver.TCPServer(("", PORT), Handler) as httpd:
         httpd.serve_forever()
     except KeyboardInterrupt:
         print("")
-        print("Stoped by the user")
+        print("Stopped by the user")
         httpd.server_close()
